@@ -1,5 +1,7 @@
 package com.gallardo.shoppinglist.domain.model
 
+import com.gallardo.shoppinglist.data.database.model.ShoppingListItemEntity
+
 data class ShoppingListItem(
     val description: String,
     val quantity: Int?,
@@ -8,3 +10,5 @@ data class ShoppingListItem(
     val listId: Int,
     val id: Int
 )
+
+fun ShoppingListItem.asDatabaseEntity() = ShoppingListItemEntity(description, quantity, unit, done, listId, id)
