@@ -25,4 +25,4 @@ data class ShoppingListItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Int
 )
 
-fun ShoppingListItemEntity.asDomain() = ShoppingListItem(description, quantity, unit, done, listId, id)
+fun ShoppingListItemEntity.asDomainModel() = ShoppingListItem(description, quantity, unit, done, listId, id)
