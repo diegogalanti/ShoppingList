@@ -10,7 +10,8 @@ data class ShoppingListEntity(
     val description: String?,
     val color: Int,
     val type: String,
+    val timestamp: Long,
     @PrimaryKey(autoGenerate = true) val id: Int
 )
 
-fun ShoppingListEntity.asDomain() = ShoppingList(name, description, color, type, id)
+fun ShoppingListEntity.asDomainModel() = ShoppingList(name, description, color, type, timestamp, id)
