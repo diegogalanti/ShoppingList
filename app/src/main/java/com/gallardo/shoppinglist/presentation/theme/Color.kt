@@ -1,4 +1,4 @@
-package com.gallardo.shoppinglist.ui.theme
+package com.gallardo.shoppinglist.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
