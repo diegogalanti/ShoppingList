@@ -1,5 +1,6 @@
 package com.gallardo.shoppinglist.data.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -18,6 +19,7 @@ data class ShoppingListItemEntity(
     val quantity: Int?,
     val unit: String?,
     val done: Boolean,
+    @ColumnInfo(index = true)
     val listId: Int,
     @PrimaryKey(autoGenerate = true) val id: Int
 )
