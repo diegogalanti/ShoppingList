@@ -17,12 +17,12 @@ import com.gallardo.shoppinglist.domain.model.ShoppingListItem
 )
 data class ShoppingListItemEntity(
     val description: String,
-    val quantity: Int?,
+    val quantity: Float?,
     val unit: String?,
     val done: Boolean,
     @ColumnInfo(index = true)
     val listId: Int,
-    @PrimaryKey(autoGenerate = true) val id: Int
+    @PrimaryKey(autoGenerate = true) val id: Int?
 )
 
 fun ShoppingListItemEntity.asDomainModel() = ShoppingListItem(description, quantity, unit, done, listId, id)
