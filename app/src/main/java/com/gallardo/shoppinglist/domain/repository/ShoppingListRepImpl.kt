@@ -21,7 +21,7 @@ class ShoppingListRepImpl(private val dao : ShoppingListDao) : ShoppingListRep {
     }
 
     override suspend fun insertShoppingList(list: ShoppingList) {
-        dao.insertShoppingList(list.asDatabaseEntity())
+        dao.upsertShoppingList(list.asDatabaseEntity())
     }
 
     override suspend fun deleteShoppingList(list: ShoppingList) {
