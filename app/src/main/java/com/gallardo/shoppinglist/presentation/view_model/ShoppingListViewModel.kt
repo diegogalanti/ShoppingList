@@ -6,17 +6,20 @@ import com.gallardo.shoppinglist.domain.model.ShoppingList
 import com.gallardo.shoppinglist.domain.repository.ShoppingListRep
 import com.gallardo.shoppinglist.presentation.event.ShoppingListEvent
 import com.gallardo.shoppinglist.presentation.state.ShoppingListUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ShoppingListViewModel(private val repository: ShoppingListRep) : ViewModel() {
+@HiltViewModel
+class ShoppingListViewModel @Inject constructor( private val repository: ShoppingListRep) : ViewModel() {
 
     val uiState : StateFlow<ShoppingListUiState> = repository.getShoppingLists().map {
         ShoppingListUiState.Success(it)
     }.stateIn(
         scope = viewModelScope,
         initialValue = ShoppingListUiState.Loading,
-        started = SharingStarted.WhileSubscribed(5_000)
+        started = SharingStarted.WhileSubscribed()
     )
 
     private var deletedList: ShoppingList? = null
