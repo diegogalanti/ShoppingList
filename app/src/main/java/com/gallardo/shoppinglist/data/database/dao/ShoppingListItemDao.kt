@@ -12,7 +12,7 @@ interface ShoppingListItemDao {
     suspend fun getShoppingListItem(id: Int): ShoppingListItemEntity
 
     @Query("SELECT id FROM ShoppingListEntity WHERE rowId = :rowId")
-    suspend fun getShoppingListID(rowID: Long): Int
+    suspend fun getShoppingListID(rowId: Long): Int
 
     @Upsert
     suspend fun upsertShoppingListItem(items: List<ShoppingListItemEntity>)
