@@ -10,11 +10,14 @@ import com.gallardo.shoppinglist.domain.model.asShoppingList
 import com.gallardo.shoppinglist.domain.repository.ShoppingListCreateRep
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
 import com.gallardo.shoppinglist.presentation.state.ShoppingListCreateUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-class ShoppingListCreateViewModel(
+@HiltViewModel
+class ShoppingListCreateViewModel @Inject constructor(
     private val repository: ShoppingListCreateRep,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -51,33 +54,32 @@ class ShoppingListCreateViewModel(
             is ShoppingListCreateEvent.ItemDescriptionChangeEvent -> {
                 _uiState.update { state ->
                     //CHECK IF THE ITEM WAS BLANK AND IS NOT BLANK ANYMORE THEN CREATE A NEW BLANK ITEM
-                    val newState = if (event.description.isNotBlank() && state.itemList[event.index].description.isBlank()) {
-                        val newList = state.itemList.toMutableList()
-                        newList.add(ShoppingListItemSimple())
-                        newList[event.index] = newList[event.index].copy(description = event.description)
-                        state.copy(itemList = newList)
-                    }
-                    //CHECK IF THE ITEM WAS NOT BLANK AND IS BLANK NOW THEN REMOVE OTHER BLANK ITEMS (ALWAYS THE LAST ONE)
-                    else if (event.description.isBlank() && state.itemList[event.index].description.isNotBlank()) {
-                        val newList = state.itemList.toMutableList()
-                        newList[event.index] = newList[event.index].copy(description = event.description)
-                        newList.removeLast()
-                        state.copy(itemList = newList)
-                    }
-                    // JUST ADJUST THE ITEM DESCRIPTION
-                    else {
-                        val newList = state.itemList.toMutableList()
-                        newList[event.index] = newList[event.index].copy(description = event.description)
-                        state.copy(itemList = newList)
-                    }
+                    val newState =
+                        if (event.description.isNotBlank() && state.itemList[event.index].description.isBlank()) {
+                            val newList = state.itemList.toMutableList()
+                            newList.add(ShoppingListItemSimple())
+                            newList[event.index] =
+                                newList[event.index].copy(description = event.description)
+                            state.copy(itemList = newList)
+                        }
+                        //CHECK IF THE ITEM WAS NOT BLANK AND IS BLANK NOW THEN REMOVE OTHER BLANK ITEMS (ALWAYS THE LAST ONE)
+                        else if (event.description.isBlank() && state.itemList[event.index].description.isNotBlank()) {
+                            val newList = state.itemList.toMutableList()
+                            newList[event.index] =
+                                newList[event.index].copy(description = event.description)
+
+                            state.copy(itemList = newList.filterIndexed { index, currentItem ->
+                                index == event.index || currentItem.description.isNotBlank()
+                            })
+                        }
+                        // JUST ADJUST THE ITEM DESCRIPTION
+                        else {
+                            val newList = state.itemList.toMutableList()
+                            newList[event.index] =
+                                newList[event.index].copy(description = event.description)
+                            state.copy(itemList = newList)
+                        }
                     newState
-                }
-            }
-            is ShoppingListCreateEvent.ItemUnitChangeEvent -> {
-                _uiState.update { state ->
-                    val newList = state.itemList.toMutableList()
-                    newList[event.index] = newList[event.index].copy(unit = event.unit)
-                    state.copy(itemList = newList)
                 }
             }
             is ShoppingListCreateEvent.ItemQuantityChangeEvent -> {
@@ -88,14 +90,18 @@ class ShoppingListCreateViewModel(
                 }
             }
             is ShoppingListCreateEvent.ListSaveEvent -> {
-                if (uiState.value.name.isBlank()){
+                if (uiState.value.name.isBlank()) {
                     _uiState.update { state ->
                         val newList = state.userMessages.toMutableList()
-                        newList.add(UserMessage("List name can not be empty", UUID = UUID.randomUUID().mostSignificantBits))
+                        newList.add(
+                            UserMessage(
+                                "List name can not be empty",
+                                UUID = UUID.randomUUID().mostSignificantBits
+                            )
+                        )
                         state.copy(userMessages = newList)
                     }
-                }
-                else {
+                } else {
                     viewModelScope.launch {
                         val rowId = repository.createShoppingList(
                             ShoppingList(
@@ -112,9 +118,14 @@ class ShoppingListCreateViewModel(
                             it.asShoppingList(newListID)
                         })
                         _uiState.update {
-                            it.copy(listSaved = true)
+                            it.copy(shouldClose = true)
                         }
                     }
+                }
+            }
+            is ShoppingListCreateEvent.ListCloseEvent -> {
+                _uiState.update {
+                    it.copy(shouldClose = true)
                 }
             }
         }
