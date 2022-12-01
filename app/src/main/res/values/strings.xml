@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ShoppingList</string>
+    <string name="save_button_description">Save list button</string>
+    <string name="close_button_description">Close list button</string>
+    <string name="change_pen_color_button_description">Change pen color button</string>
+    <string name="change_paper_color_button_description">Change paper color button</string>
+    <string name="title_hint">Shopping list title…</string>
+    <string name="description_hint">Shopping list description…</string>
 </resources>
