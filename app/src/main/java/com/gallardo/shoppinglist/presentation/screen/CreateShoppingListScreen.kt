@@ -30,6 +30,7 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
     Scaffold(
         bottomBar = {
             ShoppingListCreateBAB(
+                modifier = Modifier.height(85.dp),
                 paperColor = PaperSheetColor.values()[state.color],
                 onEvent = {
                     viewModel.onEvent(it)
