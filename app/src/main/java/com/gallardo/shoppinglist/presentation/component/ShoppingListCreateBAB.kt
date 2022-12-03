@@ -13,26 +13,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.gallardo.shoppinglist.R
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
 
 
 @Composable
-fun ShoppingListCreateBAB(paperColor: PaperSheetColor, onEvent: (ShoppingListCreateEvent) -> Unit) {
+fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetColor, onEvent: (ShoppingListCreateEvent) -> Unit, penColor: Color) {
     BottomAppBar(
-        modifier = Modifier.height(85.dp),
+        modifier = modifier,
         actions = {
             IconButton(onClick = { onEvent(ShoppingListCreateEvent.ListSaveEvent) }) {
-                Icon(Icons.Filled.Check, contentDescription = "Save list button")
+                Icon(Icons.Filled.Check, contentDescription = stringResource(id = R.string.save_button_description))
             }
             IconButton(onClick = { onEvent(ShoppingListCreateEvent.ListCloseEvent) }) {
-                Icon(Icons.Filled.Close, contentDescription = "Close list button")
+                Icon(Icons.Filled.Close, contentDescription = stringResource(id = R.string.close_button_description))
             }
             IconButton(onClick = { /* doSomething() */ }) {
                 Icon(
-                    painter = painterResource(com.gallardo.shoppinglist.R.drawable.ic_baseline_draw_24),
-                    contentDescription = "Change pen color button",
-                    tint = Color(0xFF373acb)
+                    painter = painterResource(R.drawable.ic_baseline_draw_24),
+                    contentDescription = stringResource(id = R.string.change_pen_color_button_description),
+                    tint = penColor
                 )
             }
         },
@@ -41,17 +43,17 @@ fun ShoppingListCreateBAB(paperColor: PaperSheetColor, onEvent: (ShoppingListCre
                 onClick = { /* do something */ },
                 elevation = FloatingActionButtonDefaults.elevation(1.dp)
             ) {
-                Box(modifier = Modifier.size(56.dp)) {
+                Box(modifier = Modifier.size(56.dp)) { //Same size from the FAB
                     Image(
                         painter = painterResource(id = paperColor.resId),
-                        contentDescription = "Floating Action Button",
+                        contentDescription = stringResource(id = R.string.change_paper_color_button_description),
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier.matchParentSize()
                     )
                 }
                 Icon(
                     Icons.Filled.Edit,
-                    contentDescription = "Localized description",
+                    contentDescription = stringResource(id = R.string.change_paper_color_button_description),
                     tint = Color.Black
                 )
             }

@@ -18,12 +18,14 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gallardo.shoppinglist.R
 import com.gallardo.shoppinglist.presentation.TransparentHintTextField
+import com.gallardo.shoppinglist.presentation.theme.spacingScheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -35,11 +37,13 @@ fun ShoppingListPaperSheet(
     titleValue: String,
     paperColor: PaperSheetColor,
     paperStyle: PaperSheetStyle,
+    fontColor: Color,
     content: @Composable () -> Unit
 ) {
     val image = ImageBitmap.imageResource(paperColor.resId)
     val brush =
         remember(image) { ShaderBrush(ImageShader(image, TileMode.Mirror, TileMode.Mirror)) }
+    //get the background color to paint the holes so they look transparent
     val backgroundColor = MaterialTheme.colorScheme.background
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
@@ -71,7 +75,7 @@ fun ShoppingListPaperSheet(
                         ),
                         color = backgroundColor
                     )
-                    //Fake shadow as compose don't offer drawShadow yet
+                    //Fake shadow as compose don't offer drawShadow yet, not necessary with dark background
                     if(!isDarkTheme) {
                         drawCircle(
                             radius = radiusPx - 0.5f,
@@ -94,16 +98,15 @@ fun ShoppingListPaperSheet(
                     }
                 }
             }
-            Column(Modifier.padding(8.dp)) {
+            Column(Modifier.padding(MaterialTheme.spacingScheme.small)) {
                 Spacer(modifier = Modifier.height(radius * 2 + 8.dp))
                 Row() {
                     TransparentHintTextField(
-                        hint = "Shopping list title...",
+                        hint = stringResource(id = R.string.title_hint),
                         onValueChange = onNameChange,
                         text = titleValue,
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            color = Color(0xFF373acb),
-                            fontSize = 24.sp
+                        textStyle = MaterialTheme.typography.headlineSmall.copy(
+                            color = fontColor
                         )
                     )
                 }
@@ -113,14 +116,13 @@ fun ShoppingListPaperSheet(
                         hint = "Shopping list description...",
                         onValueChange = onDescriptionChange,
                         text = descriptionValue,
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            color = Color(0xFF373acb),
-                            fontSize = 12.sp
+                        textStyle = MaterialTheme.typography.bodySmall.copy(
+                            color = fontColor
                         )
                     )
                     Text(
                         "Qty",
-                        color = Color(0xFF373acb),
+                        color = fontColor,
                         fontSize = 12.sp,
                         modifier = Modifier.width(70.dp),
                         textAlign = TextAlign.Center
