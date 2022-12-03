@@ -6,7 +6,7 @@ data class ShoppingList(
     val name: String,
     val description: String?,
     val color: Int,
-    val type: Int?,
+    val type: Int,
     val timestamp: Long,
     val id: Int?
 )
