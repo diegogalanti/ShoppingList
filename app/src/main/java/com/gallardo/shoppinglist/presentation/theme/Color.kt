@@ -1,5 +1,9 @@
 package com.gallardo.shoppinglist.presentation.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF6D5E00)
@@ -64,4 +68,29 @@ val md_theme_dark_surfaceTint = Color(0xFFDEC64C)
 val md_theme_dark_outlineVariant = Color(0xFF4A4739)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-val pen_color_blue = Color(0xFF373acb)
+val pen_color_blue: Color = Color(0xFF373acb)
+val pen_color_red: Color = Color(0xFFda2e29)
+val pen_color_green: Color = Color(0xFF5ca35d)
+val pen_color_black: Color = Color(0xFF040404)
+val line_color: Color = Color(0xFF4e4e4e)
+
+data class PaperSheetColorScheme(
+    val pen_color_blue: Color,
+    val pen_color_red: Color,
+    val pen_color_green: Color,
+    val pen_color_black: Color,
+    val line_color: Color
+)
+
+val LocalColorScheme = compositionLocalOf { PaperSheetColorScheme(
+    pen_color_blue = pen_color_blue,
+    pen_color_red = pen_color_red,
+    pen_color_green = pen_color_green,
+    pen_color_black = pen_color_black,
+    line_color = line_color
+) }
+
+val MaterialTheme.localColorScheme: PaperSheetColorScheme
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalColorScheme.current

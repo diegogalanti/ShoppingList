@@ -57,7 +57,7 @@ class ShoppingListCreateViewModel @Inject constructor(
                     val newState =
                         if (event.description.isNotBlank() && state.itemList[event.index].description.isBlank()) {
                             val newList = state.itemList.toMutableList()
-                            newList.add(ShoppingListItemSimple())
+                            newList.add(ShoppingListItemSimple("",""))
                             newList[event.index] =
                                 newList[event.index].copy(description = event.description)
                             state.copy(itemList = newList)
@@ -126,6 +126,11 @@ class ShoppingListCreateViewModel @Inject constructor(
             is ShoppingListCreateEvent.ListCloseEvent -> {
                 _uiState.update {
                     it.copy(shouldClose = true)
+                }
+            }
+            is ShoppingListCreateEvent.PenColorChangeEvent -> {
+                _uiState.update {
+                    it.copy(penColor = event.color)
                 }
             }
         }

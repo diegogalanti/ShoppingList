@@ -16,28 +16,25 @@ import androidx.compose.ui.unit.dp
 fun ShoppingListPaperSheetLine(
     description: String,
     quantity: String,
+    penColor: Color,
     onDescriptionChange: (String) -> Unit,
     onQuantityChange: (String) -> Unit
 ) {
     Row(horizontalArrangement = Arrangement.End) {
-        Text(" • ", color = Color(0xFF373acb))
+        Text(" • ", color = penColor)
         BasicTextField(
             modifier = Modifier.weight(1f),
             value = description,
             onValueChange = onDescriptionChange,
             textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(
-                    0xFF373acb
-                )
+                color = penColor
             ),
         )
         BasicTextField(
             value = quantity,
             onValueChange = onQuantityChange,
             textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = Color(
-                    0xFF373acb
-                ), textAlign = TextAlign.Center
+                color = penColor, textAlign = TextAlign.Center
             ), modifier = Modifier.width(70.dp)
         )
     }
