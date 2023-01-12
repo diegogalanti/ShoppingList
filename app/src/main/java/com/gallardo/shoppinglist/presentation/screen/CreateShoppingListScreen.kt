@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gallardo.shoppinglist.presentation.component.*
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
+import com.gallardo.shoppinglist.presentation.theme.localColorScheme
 import com.gallardo.shoppinglist.presentation.view_model.ShoppingListCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,6 +22,7 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
     val viewModel = hiltViewModel<ShoppingListCreateViewModel>()
     val state = viewModel.uiState.collectAsState().value
 
+    //testar se precisa do effect
     if(state.shouldClose){
         LaunchedEffect(state) {
             onClose()
@@ -34,7 +36,8 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                 paperColor = PaperSheetColor.values()[state.color],
                 onEvent = {
                     viewModel.onEvent(it)
-                }
+                },
+                penColor = state.penColor
             )
         }
     ) { padding ->
@@ -49,7 +52,8 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                 onDescriptionChange = { viewModel.onEvent(ShoppingListCreateEvent.DescriptionChangeEvent(it)) },
                 onNameChange = { viewModel.onEvent(ShoppingListCreateEvent.NameChangeEvent(it)) },
                 paperColor = PaperSheetColor.values()[state.color],
-                paperStyle = PaperSheetStyle.values()[state.type?:0]
+                paperStyle = PaperSheetStyle.values()[state.type],
+                fontColor = state.penColor
             ) {
                 Column(
                     modifier
@@ -59,13 +63,14 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                         ShoppingListPaperSheetLine(
                             description = currentItem.description,
                             quantity = currentItem.quantity?:"1",
+                            penColor = state.penColor,
                             onDescriptionChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemDescriptionChangeEvent(index, it))},
                             onQuantityChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemQuantityChangeEvent(index, it))}
                         )
                         Row(horizontalArrangement = Arrangement.Center) {
                             Divider(
                                 modifier.fillMaxWidth(),
-                                color = Color(0xFF4e4e4e),
+                                color = MaterialTheme.localColorScheme.line_color,
                                 thickness = 1.dp
                             )
                         }

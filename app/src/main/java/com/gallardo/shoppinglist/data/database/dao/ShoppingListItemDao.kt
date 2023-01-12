@@ -7,7 +7,6 @@ import com.gallardo.shoppinglist.data.database.model.ShoppingListItemEntity
 @Dao
 interface ShoppingListItemDao {
 
-
     @Query("SELECT * FROM ShoppingListItemEntity WHERE id = :id")
     suspend fun getShoppingListItem(id: Int): ShoppingListItemEntity
 

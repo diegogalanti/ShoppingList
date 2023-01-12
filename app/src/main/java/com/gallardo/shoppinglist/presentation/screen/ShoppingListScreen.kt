@@ -56,7 +56,7 @@ fun ShoppingListScreen(modifier: Modifier = Modifier, onFabClick: () -> Unit) {
                                 titleValue = currentList.name,
                                 descriptionValue = currentList.description?:"",
                                 paperColor = PaperSheetColor.values()[currentList.color],
-                                paperStyle = PaperSheetStyle.values()[currentList.type?:0]
+                                paperStyle = PaperSheetStyle.values()[currentList.type]
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
