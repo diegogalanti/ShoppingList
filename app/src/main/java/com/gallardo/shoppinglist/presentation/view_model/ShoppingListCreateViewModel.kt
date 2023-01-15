@@ -92,14 +92,15 @@ class ShoppingListCreateViewModel @Inject constructor(
             is ShoppingListCreateEvent.ListSaveEvent -> {
                 if (uiState.value.name.isBlank()) {
                     _uiState.update { state ->
-                        val newList = state.userMessages.toMutableList()
-                        newList.add(
+                        val messages = state.userMessages +
                             UserMessage(
                                 "List name can not be empty",
                                 UUID = UUID.randomUUID().mostSignificantBits
                             )
-                        )
-                        state.copy(userMessages = newList)
+                        val withoutDuplicates = messages.distinctBy {
+                            it.message
+                        }
+                        state.copy(userMessages = withoutDuplicates)
                     }
                 } else {
                     viewModelScope.launch {
@@ -133,6 +134,13 @@ class ShoppingListCreateViewModel @Inject constructor(
                     it.copy(penColor = event.color)
                 }
             }
+        }
+    }
+
+    fun userMessageShown(messageUUID: Long){
+        _uiState.update { state ->
+            val messages = state.userMessages.filterNot { it.UUID == messageUUID }
+            state.copy(userMessages = messages)
         }
     }
 }
