@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.dp
@@ -22,14 +20,14 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
     val viewModel = hiltViewModel<ShoppingListCreateViewModel>()
     val state = viewModel.uiState.collectAsState().value
 
+    val snackbarHostState = remember { SnackbarHostState() }
     //testar se precisa do effect
     if(state.shouldClose){
-        LaunchedEffect(state) {
             onClose()
-        }
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             ShoppingListCreateBAB(
                 modifier = Modifier.height(85.dp),
@@ -41,6 +39,12 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
             )
         }
     ) { padding ->
+        LaunchedEffect(state) {
+            if(state.userMessages.isNotEmpty()) {
+                snackbarHostState.showSnackbar(state.userMessages.first().message)
+                viewModel.userMessageShown(state.userMessages.first().UUID)
+            }
+        }
         Column(
             modifier
                 .verticalScroll(rememberScrollState())
