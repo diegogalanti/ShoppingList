@@ -94,7 +94,7 @@ class ShoppingListCreateViewModel @Inject constructor(
                     _uiState.update { state ->
                         val messages = state.userMessages +
                             UserMessage(
-                                "List name can not be empty",
+                                "List title cannot be empty",
                                 UUID = UUID.randomUUID().mostSignificantBits
                             )
                         val withoutDuplicates = messages.distinctBy {
