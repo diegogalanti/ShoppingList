@@ -8,10 +8,11 @@ import com.gallardo.shoppinglist.domain.model.ShoppingList
 data class ShoppingListEntity(
     val name: String,
     val description: String?,
-    val color: Int,
+    val paperTexture: Int,
     val type: Int,
     val timestamp: Long,
+    val penColor: Int,
     @PrimaryKey(autoGenerate = true) val id: Int?
 )
 
-fun ShoppingListEntity.asDomainModel() = ShoppingList(name, description, color, type, timestamp, id)
+fun ShoppingListEntity.asDomainModel() = ShoppingList(name, description, paperTexture, type, timestamp, penColor, id)

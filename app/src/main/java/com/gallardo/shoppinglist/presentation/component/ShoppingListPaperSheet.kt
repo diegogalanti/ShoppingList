@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gallardo.shoppinglist.R
 import com.gallardo.shoppinglist.presentation.TransparentHintTextField
-import com.gallardo.shoppinglist.presentation.theme.spacingScheme
+import com.gallardo.shoppinglist.presentation.theme.*
 import kotlin.math.roundToInt
 
 @Composable
@@ -35,7 +35,7 @@ fun ShoppingListPaperSheet(
     onDescriptionChange: (String) -> Unit,
     descriptionValue: String,
     titleValue: String,
-    paperColor: PaperSheetColor,
+    paperColor: PaperSheetTexture,
     paperStyle: PaperSheetStyle,
     fontColor: Color,
     content: @Composable () -> Unit
@@ -180,7 +180,7 @@ enum class PaperSheetStyle(val cornerRadius: Dp, val holeRadius: Dp) {
     }
 }
 
-enum class PaperSheetColor(val resId: Int) {
+enum class PaperSheetTexture(val resId: Int) {
     BLUE(R.drawable.blue),
     BROWN_1(R.drawable.brown),
     BROWN_2(R.drawable.brown2),
@@ -197,6 +197,14 @@ enum class PaperSheetColor(val resId: Int) {
     YELLOW_2(R.drawable.yellow2);
 
     companion object {
-        fun randomColor(): PaperSheetColor = values().random()
+        fun randomColor(): PaperSheetTexture = values().random()
     }
+}
+
+enum class PenColor(val color: Color, val colorName : String) {
+    BLUE(pen_color_blue, "Blue"),
+    RED(pen_color_red, "Red"),
+    BLACK(pen_color_black, "Black"),
+    GREEN(pen_color_green, "Green");
+
 }

@@ -31,9 +31,9 @@ class ShoppingListCreateViewModel @Inject constructor(
 
     fun onEvent(event: ShoppingListCreateEvent) {
         when (event) {
-            is ShoppingListCreateEvent.ColorChangeEvent -> {
+            is ShoppingListCreateEvent.TextureChangeEvent -> {
                 _uiState.update {
-                    it.copy(color = event.color)
+                    it.copy(texture = event.texture)
                 }
             }
             is ShoppingListCreateEvent.NameChangeEvent -> {
@@ -108,9 +108,10 @@ class ShoppingListCreateViewModel @Inject constructor(
                             ShoppingList(
                                 uiState.value.name,
                                 uiState.value.description,
-                                uiState.value.color,
+                                uiState.value.texture,
                                 uiState.value.type,
                                 1,
+                                uiState.value.penColor,
                                 null
                             )
                         )

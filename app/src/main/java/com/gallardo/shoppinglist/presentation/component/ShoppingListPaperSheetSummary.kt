@@ -27,13 +27,14 @@ fun ShoppingListPaperSheetSummary(
     modifier: Modifier = Modifier,
     descriptionValue: String,
     titleValue: String,
-    paperColor: PaperSheetColor,
-    paperStyle: PaperSheetStyle
+    paperTexture: PaperSheetTexture,
+    paperStyle: PaperSheetStyle,
+    penColor: PenColor,
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
-    val image = ImageBitmap.imageResource(paperColor.resId)
+    val image = ImageBitmap.imageResource(paperTexture.resId)
     val brush =
         remember(image) { ShaderBrush(ImageShader(image, TileMode.Mirror, TileMode.Mirror)) }
-    val backgroundColor = MaterialTheme.colorScheme.background
     val isDarkTheme = isSystemInDarkTheme()
     Surface(
         modifier = modifier,
@@ -93,7 +94,7 @@ fun ShoppingListPaperSheetSummary(
                     Text(
                         text = titleValue,
                         fontSize = 24.sp,
-                        color = Color(0xFF373acb),
+                        color = penColor.color,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -102,7 +103,7 @@ fun ShoppingListPaperSheetSummary(
                     Text(
                         text = descriptionValue,
                         fontSize = 12.sp,
-                        color = Color(0xFF373acb),
+                        color = penColor.color,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

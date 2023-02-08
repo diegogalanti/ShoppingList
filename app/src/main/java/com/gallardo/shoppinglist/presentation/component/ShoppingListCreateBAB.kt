@@ -4,66 +4,67 @@ package com.gallardo.shoppinglist.presentation.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.gallardo.shoppinglist.R
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
-import com.gallardo.shoppinglist.presentation.theme.*
 
 
 @Composable
-fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetColor, onEvent: (ShoppingListCreateEvent) -> Unit, penColor: Color) {
+fun ShoppingListCreateBAB(
+    modifier: Modifier = Modifier,
+    paperColor: PaperSheetTexture,
+    onEvent: (ShoppingListCreateEvent) -> Unit,
+    penColor: Color
+) {
     var colorExpanded by remember { mutableStateOf(false) }
     var textureExpanded by remember { mutableStateOf(false) }
-    var fabPosition by remember { mutableStateOf(Offset.Zero) }
-    var fabSize by remember { mutableStateOf(IntSize.Zero) }
-    var penColorPosition by remember { mutableStateOf(Offset.Zero) }
-    var closeDialog by remember { mutableStateOf(false) }
+    var showDiscartChangesDialog by remember { mutableStateOf(false) }
     BottomAppBar(
         modifier = modifier,
         actions = {
             IconButton(onClick = { onEvent(ShoppingListCreateEvent.ListSaveEvent) }) {
-                Icon(Icons.Filled.Check, contentDescription = stringResource(id = R.string.save_button_description))
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = stringResource(id = R.string.save_button_description)
+                )
             }
             IconButton(onClick = {
-                closeDialog = true
+                showDiscartChangesDialog = true
             }) {
-                Icon(Icons.Filled.Close, contentDescription = stringResource(id = R.string.close_button_description))
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = stringResource(id = R.string.close_button_description)
+                )
             }
             IconButton(
                 onClick = { colorExpanded = true },
-                modifier = Modifier.onGloballyPositioned {
-                    penColorPosition = it.positionInRoot()
-                }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_baseline_draw_24),
                     contentDescription = stringResource(id = R.string.change_pen_color_button_description),
                     tint = penColor
                 )
+                ColorChangeDropDownMenu(onItemClick = {
+                    onEvent(it)
+                    colorExpanded = false
+                }, expanded = colorExpanded, onDismissRequest = { colorExpanded = false })
             }
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { textureExpanded = true },
-                elevation = FloatingActionButtonDefaults.elevation(1.dp),
-                modifier = Modifier.onGloballyPositioned {
-                    fabPosition = it.positionInRoot()
-                    fabSize = it.size
-                }
+                elevation = FloatingActionButtonDefaults.elevation(1.dp)
             ) {
                 Box(modifier = Modifier.size(56.dp)) { //Same size from the FAB
                     Image(
@@ -78,12 +79,16 @@ fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetCo
                     contentDescription = stringResource(id = R.string.change_paper_color_button_description),
                     tint = Color.Black
                 )
+                TextureChangeDropDownMenu(onItemClick = {
+                    onEvent(it)
+                    textureExpanded = false
+                }, expanded = textureExpanded, onDismissRequest = { textureExpanded = false })
             }
         }
     )
-    if (closeDialog) {
+    if (showDiscartChangesDialog) {
         AlertDialog(
-            onDismissRequest = { closeDialog = false },
+            onDismissRequest = { showDiscartChangesDialog = false },
             text = {
                 Text(
                     "Do you want to discard changes and exit? "
@@ -92,7 +97,7 @@ fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetCo
             confirmButton = {
                 TextButton(
                     onClick = {
-                        closeDialog = false
+                        showDiscartChangesDialog = false
                         onEvent(ShoppingListCreateEvent.ListCloseEvent)
                     }
                 ) {
@@ -102,7 +107,7 @@ fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetCo
             dismissButton = {
                 TextButton(
                     onClick = {
-                        closeDialog = false
+                        showDiscartChangesDialog = false
                     }
                 ) {
                     Text("No")
@@ -110,97 +115,66 @@ fun ShoppingListCreateBAB(modifier:Modifier = Modifier, paperColor: PaperSheetCo
             }
         )
     }
+}
+
+@Composable
+private fun ColorChangeDropDownMenu(
+    expanded: Boolean,
+    modifier: Modifier = Modifier,
+    onItemClick: (ShoppingListCreateEvent.PenColorChangeEvent) -> Unit,
+    onDismissRequest: () -> Unit
+) {
     DropdownMenu(
-        expanded = colorExpanded,
-        onDismissRequest = { colorExpanded = false },
-        offset = DpOffset(with(LocalDensity.current){ penColorPosition.x.toDp()} + 35.dp, 0.dp)
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismissRequest
     ) {
-        DropdownMenuItem(
-            onClick = {
-                onEvent(ShoppingListCreateEvent.PenColorChangeEvent(pen_color_blue))
-                colorExpanded = false
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_draw_24),
-                    contentDescription = stringResource(id = R.string.change_pen_color_button_description),
-                    tint = MaterialTheme.localColorScheme.pen_color_blue
-                )
-            },
-            text = {
-                Text(text = "Blue")
-            }
-        )
-        DropdownMenuItem(
-            onClick = {
-                onEvent(ShoppingListCreateEvent.PenColorChangeEvent(pen_color_red))
-                colorExpanded = false
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_draw_24),
-                    contentDescription = stringResource(id = R.string.change_pen_color_button_description),
-                    tint = MaterialTheme.localColorScheme.pen_color_red
-                )
-            },
-            text = {
-                Text(text = "Red")
-            }
-        )
-        DropdownMenuItem(
-            onClick = {
-                onEvent(ShoppingListCreateEvent.PenColorChangeEvent(pen_color_black))
-                colorExpanded = false
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_draw_24),
-                    contentDescription = stringResource(id = R.string.change_pen_color_button_description),
-                    tint = MaterialTheme.localColorScheme.pen_color_black
-                )
-            },
-            text = {
-                Text(text = "Black")
-            }
-        )
-        DropdownMenuItem(
-            onClick = {
-                onEvent(ShoppingListCreateEvent.PenColorChangeEvent(pen_color_green))
-                colorExpanded = false
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_draw_24),
-                    contentDescription = stringResource(id = R.string.change_pen_color_button_description),
-                    tint = MaterialTheme.localColorScheme.pen_color_green
-                )
-            },
-            text = {
-                Text(text = "Green")
-            }
-        )
-    }
-    DropdownMenu(
-        expanded = textureExpanded,
-        onDismissRequest = { textureExpanded = false },
-        //calculate window height minus appbar height
-        modifier = Modifier
-            .height(280.dp)
-            .width(81.dp),
-        offset = DpOffset(with(LocalDensity.current){ fabPosition.x.toDp() - fabSize.width.toDp()} - 25.dp, 0.dp)
-    ) {
-        PaperSheetColor.values().forEach {
+        PenColor.values().forEach {
             DropdownMenuItem(
                 onClick = {
-                    onEvent(ShoppingListCreateEvent.ColorChangeEvent(it.ordinal))
-                    textureExpanded = false
+                    onItemClick(ShoppingListCreateEvent.PenColorChangeEvent(it.ordinal))
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_baseline_draw_24),
+                        contentDescription = stringResource(id = R.string.change_pen_color_button_description),
+                        tint = it.color
+                    )
+                },
+                text = {
+                    Text(text = it.colorName)
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun TextureChangeDropDownMenu(
+    expanded: Boolean,
+    modifier: Modifier = Modifier,
+    onItemClick: (ShoppingListCreateEvent.TextureChangeEvent) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        //futere task: calculate window height minus appbar height
+        modifier = modifier
+            .height(280.dp)
+            .width(81.dp),
+    ) {
+        PaperSheetTexture.values().forEach {
+            DropdownMenuItem(
+                onClick = {
+                    onItemClick(ShoppingListCreateEvent.TextureChangeEvent(it.resId))
                 },
                 text = {
                     Column() {
                         Box(modifier = Modifier.size(56.dp)) { //Same size from the FAB
-                            Image(
-                                //Using the full image as resource it slow, we should create a smaller resource just for the icons
-                                painter = painterResource(id = it.resId),
+                            AsyncImage(
+                                model = it.resId,
                                 contentDescription = "Change paper color",
                                 contentScale = ContentScale.None,
                                 modifier = Modifier.matchParentSize()

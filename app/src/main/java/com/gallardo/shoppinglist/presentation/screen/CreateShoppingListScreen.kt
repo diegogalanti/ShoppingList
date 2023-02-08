@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gallardo.shoppinglist.presentation.component.*
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
 import com.gallardo.shoppinglist.presentation.theme.localColorScheme
@@ -18,12 +19,12 @@ import com.gallardo.shoppinglist.presentation.view_model.ShoppingListCreateViewM
 @Composable
 fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit) {
     val viewModel = hiltViewModel<ShoppingListCreateViewModel>()
-    val state = viewModel.uiState.collectAsState().value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     //testar se precisa do effect
-    if(state.shouldClose){
-            onClose()
+    if(uiState.shouldClose){
+        onClose()
     }
 
     Scaffold(
@@ -31,18 +32,18 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
         bottomBar = {
             ShoppingListCreateBAB(
                 modifier = Modifier.height(85.dp),
-                paperColor = PaperSheetColor.values()[state.color],
+                paperColor = PaperSheetTexture.values()[uiState.texture],
                 onEvent = {
                     viewModel.onEvent(it)
                 },
-                penColor = state.penColor
+                penColor = PenColor.values()[uiState.penColor].color
             )
         }
     ) { padding ->
-        LaunchedEffect(state) {
-            if(state.userMessages.isNotEmpty()) {
-                snackbarHostState.showSnackbar(state.userMessages.first().message)
-                viewModel.userMessageShown(state.userMessages.first().UUID)
+        LaunchedEffect(uiState) {
+            if(uiState.userMessages.isNotEmpty()) {
+                snackbarHostState.showSnackbar(uiState.userMessages.first().message)
+                viewModel.userMessageShown(uiState.userMessages.first().UUID)
             }
         }
         Column(
@@ -51,23 +52,23 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                 .padding(padding)) {
             ShoppingListPaperSheet(
                 modifier = modifier.padding(16.dp),
-                descriptionValue = state.description ?: "",
-                titleValue = state.name,
+                descriptionValue = uiState.description ?: "",
+                titleValue = uiState.name,
                 onDescriptionChange = { viewModel.onEvent(ShoppingListCreateEvent.DescriptionChangeEvent(it)) },
                 onNameChange = { viewModel.onEvent(ShoppingListCreateEvent.NameChangeEvent(it)) },
-                paperColor = PaperSheetColor.values()[state.color],
-                paperStyle = PaperSheetStyle.values()[state.type],
-                fontColor = state.penColor
+                paperColor = PaperSheetTexture.values()[uiState.texture],
+                paperStyle = PaperSheetStyle.values()[uiState.type],
+                fontColor = PenColor.values()[uiState.penColor].color
             ) {
                 Column(
                     modifier
                         .fillMaxWidth()
                 ) {
-                    state.itemList.forEachIndexed { index, currentItem ->
+                    uiState.itemList.forEachIndexed { index, currentItem ->
                         ShoppingListPaperSheetLine(
                             description = currentItem.description,
-                            quantity = currentItem.quantity?:"1",
-                            penColor = state.penColor,
+                            quantity = currentItem.quantity?:"",
+                            penColor = PenColor.values()[uiState.penColor].color,
                             onDescriptionChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemDescriptionChangeEvent(index, it))},
                             onQuantityChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemQuantityChangeEvent(index, it))}
                         )
