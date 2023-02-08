@@ -73,6 +73,8 @@ val pen_color_red: Color = Color(0xFFda2e29)
 val pen_color_green: Color = Color(0xFF5ca35d)
 val pen_color_black: Color = Color(0xFF040404)
 val line_color: Color = Color(0xFF4e4e4e)
+val light_red: Color = Color(0xFFFFE6EE)
+val dark_red: Color = Color(0xFF800000)
 
 data class PaperSheetColorScheme(
     val pen_color_blue: Color,
