@@ -168,7 +168,7 @@ private fun TextureChangeDropDownMenu(
         PaperSheetTexture.values().forEach {
             DropdownMenuItem(
                 onClick = {
-                    onItemClick(ShoppingListCreateEvent.TextureChangeEvent(it.resId))
+                    onItemClick(ShoppingListCreateEvent.TextureChangeEvent(it.ordinal))
                 },
                 text = {
                     Column() {
