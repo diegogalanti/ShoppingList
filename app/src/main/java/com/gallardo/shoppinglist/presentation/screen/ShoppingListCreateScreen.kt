@@ -1,5 +1,6 @@
 package com.gallardo.shoppinglist.presentation.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,16 +18,18 @@ import com.gallardo.shoppinglist.presentation.view_model.ShoppingListCreateViewM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit) {
+fun ShoppingListCreateScreen(modifier: Modifier = Modifier, onClose: () -> Unit) {
     val viewModel = hiltViewModel<ShoppingListCreateViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+    var showDiscardChangesDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     //testar se precisa do effect
     if(uiState.shouldClose){
         onClose()
     }
-
+    BackHandler(enabled = true) {
+        showDiscardChangesDialog = true
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
@@ -36,7 +39,8 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                 onEvent = {
                     viewModel.onEvent(it)
                 },
-                penColor = PenColor.values()[uiState.penColor].color
+                penColor = PenColor.values()[uiState.penColor].color,
+                onClose = {showDiscardChangesDialog = true}
             )
         }
     ) { padding ->
@@ -50,13 +54,13 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
             modifier
                 .verticalScroll(rememberScrollState())
                 .padding(padding)) {
-            ShoppingListPaperSheet(
+            ShoppingListEditablePaperSheet(
                 modifier = modifier.padding(16.dp),
                 descriptionValue = uiState.description ?: "",
                 titleValue = uiState.name,
                 onDescriptionChange = { viewModel.onEvent(ShoppingListCreateEvent.DescriptionChangeEvent(it)) },
                 onNameChange = { viewModel.onEvent(ShoppingListCreateEvent.NameChangeEvent(it)) },
-                paperColor = PaperSheetTexture.values()[uiState.texture],
+                paperTexture = PaperSheetTexture.values()[uiState.texture],
                 paperStyle = PaperSheetStyle.values()[uiState.type],
                 fontColor = PenColor.values()[uiState.penColor].color
             ) {
@@ -65,7 +69,7 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                         .fillMaxWidth()
                 ) {
                     uiState.itemList.forEachIndexed { index, currentItem ->
-                        ShoppingListPaperSheetLine(
+                        ShoppingListPaperSheetEditableLine(
                             description = currentItem.description,
                             quantity = currentItem.quantity?:"",
                             penColor = PenColor.values()[uiState.penColor].color,
@@ -84,5 +88,33 @@ fun CreateShoppingListScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
             }
         }
     }
-
+    if (showDiscardChangesDialog) {
+        AlertDialog(
+            onDismissRequest = { showDiscardChangesDialog = false },
+            text = {
+                Text(
+                    "Do you want to discard changes and exit? "
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardChangesDialog = false
+                        viewModel.onEvent(ShoppingListCreateEvent.ListCloseEvent)
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDiscardChangesDialog = false
+                    }
+                ) {
+                    Text("No")
+                }
+            }
+        )
+    }
 }

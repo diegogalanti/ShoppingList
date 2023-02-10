@@ -25,11 +25,12 @@ fun ShoppingListCreateBAB(
     modifier: Modifier = Modifier,
     paperColor: PaperSheetTexture,
     onEvent: (ShoppingListCreateEvent) -> Unit,
-    penColor: Color
+    penColor: Color,
+    onClose: () -> Unit
 ) {
     var colorExpanded by remember { mutableStateOf(false) }
     var textureExpanded by remember { mutableStateOf(false) }
-    var showDiscartChangesDialog by remember { mutableStateOf(false) }
+
     BottomAppBar(
         modifier = modifier,
         actions = {
@@ -40,7 +41,7 @@ fun ShoppingListCreateBAB(
                 )
             }
             IconButton(onClick = {
-                showDiscartChangesDialog = true
+                onClose()
             }) {
                 Icon(
                     Icons.Filled.Close,
@@ -86,35 +87,6 @@ fun ShoppingListCreateBAB(
             }
         }
     )
-    if (showDiscartChangesDialog) {
-        AlertDialog(
-            onDismissRequest = { showDiscartChangesDialog = false },
-            text = {
-                Text(
-                    "Do you want to discard changes and exit? "
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDiscartChangesDialog = false
-                        onEvent(ShoppingListCreateEvent.ListCloseEvent)
-                    }
-                ) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDiscartChangesDialog = false
-                    }
-                ) {
-                    Text("No")
-                }
-            }
-        )
-    }
 }
 
 @Composable
