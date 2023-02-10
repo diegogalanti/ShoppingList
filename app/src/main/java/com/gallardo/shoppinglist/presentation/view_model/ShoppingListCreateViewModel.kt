@@ -13,7 +13,7 @@ import com.gallardo.shoppinglist.presentation.state.ShoppingListCreateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -110,7 +110,7 @@ class ShoppingListCreateViewModel @Inject constructor(
                                 uiState.value.description,
                                 uiState.value.texture,
                                 uiState.value.type,
-                                1,
+                                System.currentTimeMillis(),
                                 uiState.value.penColor,
                                 null
                             )
