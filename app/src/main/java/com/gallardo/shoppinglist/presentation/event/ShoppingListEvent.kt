@@ -6,3 +6,8 @@ sealed interface ShoppingListEvent {
     data class DeleteListEvent(val list: ShoppingList): ShoppingListEvent
     object UndoDeleteListEvent: ShoppingListEvent
 }
+
+sealed interface ShoppingListNavigationEvent {
+    data class OpenListEvent(val listId: Int): ShoppingListNavigationEvent
+    object CreateListEvent: ShoppingListNavigationEvent
+}

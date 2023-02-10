@@ -29,18 +29,18 @@ import com.gallardo.shoppinglist.presentation.theme.*
 import kotlin.math.roundToInt
 
 @Composable
-fun ShoppingListPaperSheet(
+fun ShoppingListEditablePaperSheet(
     modifier: Modifier = Modifier,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     descriptionValue: String,
     titleValue: String,
-    paperColor: PaperSheetTexture,
+    paperTexture: PaperSheetTexture,
     paperStyle: PaperSheetStyle,
     fontColor: Color,
     content: @Composable () -> Unit
 ) {
-    val image = ImageBitmap.imageResource(paperColor.resId)
+    val image = ImageBitmap.imageResource(paperTexture.resId)
     val brush =
         remember(image) { ShaderBrush(ImageShader(image, TileMode.Mirror, TileMode.Mirror)) }
     //get the background color to paint the holes so they look transparent

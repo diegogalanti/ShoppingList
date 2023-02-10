@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ShoppingListPaperSheetLine(
+fun ShoppingListPaperSheetEditableLine(
     description: String,
     quantity: String,
     penColor: Color,

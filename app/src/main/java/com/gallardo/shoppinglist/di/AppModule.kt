@@ -3,10 +3,7 @@ package com.gallardo.shoppinglist.di
 import android.content.Context
 import androidx.room.Room
 import com.gallardo.shoppinglist.data.database.ShoppingListDatabase
-import com.gallardo.shoppinglist.domain.repository.ShoppingListCreateRep
-import com.gallardo.shoppinglist.domain.repository.ShoppingListCreateRepImpl
-import com.gallardo.shoppinglist.domain.repository.ShoppingListRep
-import com.gallardo.shoppinglist.domain.repository.ShoppingListRepImpl
+import com.gallardo.shoppinglist.domain.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,11 +16,16 @@ object AppModule {
 
     @Provides
     fun provideShoppingListRep(database: ShoppingListDatabase) : ShoppingListRep {
-        return ShoppingListRepImpl(database.shoppingListDao)
+        return ShoppingListRepImpl(database.shoppingListDao, database.shoppingListItemDao)
     }
     @Provides
     fun provideShoppingListCreateRep(database: ShoppingListDatabase) : ShoppingListCreateRep {
-        return ShoppingListCreateRepImpl(database.shoppingListItemDao)
+        return ShoppingListCreateRepImpl(database.shoppingListDao, database.shoppingListItemDao)
+    }
+
+    @Provides
+    fun provideShoppingListViewRep(database: ShoppingListDatabase) : ShoppingListViewRep {
+        return ShoppingListViewRepImpl(database.shoppingListDao, database.shoppingListItemDao)
     }
 
     @Provides
