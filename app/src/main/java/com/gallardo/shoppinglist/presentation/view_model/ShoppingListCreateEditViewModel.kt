@@ -19,6 +19,8 @@ class ShoppingListCreateEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private lateinit var initialUiState : ShoppingListCreateUiState
+
     private val _uiState =
         MutableStateFlow<ShoppingListCreateUiState>(
             ShoppingListCreateUiState()
