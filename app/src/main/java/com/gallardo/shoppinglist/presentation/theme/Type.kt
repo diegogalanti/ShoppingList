@@ -4,6 +4,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.gallardo.shoppinglist.R
 
@@ -40,17 +41,16 @@ val Typography = Typography(
         fontSize = 24.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.crafty_girls_regular)),
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
         lineHeight = 28.sp,
-        fontSize = 22.sp
-    ),
+        fontSize = 22.sp),
     titleMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.crafty_girls_regular)),
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
         lineHeight = 24.sp,
         fontSize = 16.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.crafty_girls_regular)),
+        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
         lineHeight = 20.sp,
         fontSize = 14.sp
     ),
@@ -72,16 +72,19 @@ val Typography = Typography(
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         lineHeight = 20.sp,
-        fontSize = 14.sp
+        fontSize = 14.sp,
+        fontWeight = FontWeight.W500
     ),
     labelMedium = TextStyle(
         fontFamily = FontFamily.Default,
         lineHeight = 16.sp,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W500
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         lineHeight = 16.sp,
-        fontSize = 11.sp
+        fontSize = 11.sp,
+        fontWeight = FontWeight.W500
     )
 )
