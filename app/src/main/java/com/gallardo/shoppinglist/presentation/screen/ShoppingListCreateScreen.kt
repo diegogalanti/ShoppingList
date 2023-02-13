@@ -4,33 +4,63 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gallardo.shoppinglist.presentation.component.*
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
 import com.gallardo.shoppinglist.presentation.theme.localColorScheme
-import com.gallardo.shoppinglist.presentation.view_model.ShoppingListCreateViewModel
+import com.gallardo.shoppinglist.presentation.view_model.ShoppingListCreateEditViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingListCreateScreen(modifier: Modifier = Modifier, onClose: () -> Unit) {
-    val viewModel = hiltViewModel<ShoppingListCreateViewModel>()
+    val viewModel = hiltViewModel<ShoppingListCreateEditViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showDiscardChangesDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     //testar se precisa do effect
-    if(uiState.shouldClose){
-        onClose()
+    if (uiState.shouldClose) {
+        LaunchedEffect(key1 = true) {
+            onClose()
+        }
     }
     BackHandler(enabled = true) {
-        showDiscardChangesDialog = true
+        showDiscardChangesDialog = viewModel.shouldShowDiscardChanges()
+        if (!showDiscardChangesDialog)
+            viewModel.onEvent(ShoppingListCreateEvent.ListCloseEvent)
     }
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        uiState.screenTitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        showDiscardChangesDialog = viewModel.shouldShowDiscardChanges()
+                        if (!showDiscardChangesDialog)
+                            viewModel.onEvent(ShoppingListCreateEvent.ListCloseEvent)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Return to previous screen"
+                        )
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             ShoppingListCreateBAB(
@@ -39,13 +69,12 @@ fun ShoppingListCreateScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                 onEvent = {
                     viewModel.onEvent(it)
                 },
-                penColor = PenColor.values()[uiState.penColor].color,
-                onClose = {showDiscardChangesDialog = true}
+                penColor = PenColor.values()[uiState.penColor].color
             )
         }
     ) { padding ->
         LaunchedEffect(uiState) {
-            if(uiState.userMessages.isNotEmpty()) {
+            if (uiState.userMessages.isNotEmpty()) {
                 snackbarHostState.showSnackbar(uiState.userMessages.first().message)
                 viewModel.userMessageShown(uiState.userMessages.first().UUID)
             }
@@ -53,12 +82,19 @@ fun ShoppingListCreateScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
         Column(
             modifier
                 .verticalScroll(rememberScrollState())
-                .padding(padding)) {
+                .padding(padding)
+        ) {
             ShoppingListEditablePaperSheet(
                 modifier = modifier.padding(16.dp),
                 descriptionValue = uiState.description ?: "",
                 titleValue = uiState.name,
-                onDescriptionChange = { viewModel.onEvent(ShoppingListCreateEvent.DescriptionChangeEvent(it)) },
+                onDescriptionChange = {
+                    viewModel.onEvent(
+                        ShoppingListCreateEvent.DescriptionChangeEvent(
+                            it
+                        )
+                    )
+                },
                 onNameChange = { viewModel.onEvent(ShoppingListCreateEvent.NameChangeEvent(it)) },
                 paperTexture = PaperSheetTexture.values()[uiState.texture],
                 paperStyle = PaperSheetStyle.values()[uiState.type],
@@ -71,10 +107,24 @@ fun ShoppingListCreateScreen(modifier: Modifier = Modifier, onClose: () -> Unit)
                     uiState.itemList.forEachIndexed { index, currentItem ->
                         ShoppingListPaperSheetEditableLine(
                             description = currentItem.description,
-                            quantity = currentItem.quantity?:"",
+                            quantity = currentItem.quantity ?: "",
                             penColor = PenColor.values()[uiState.penColor].color,
-                            onDescriptionChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemDescriptionChangeEvent(index, it))},
-                            onQuantityChange = {viewModel.onEvent(ShoppingListCreateEvent.ItemQuantityChangeEvent(index, it))}
+                            onDescriptionChange = {
+                                viewModel.onEvent(
+                                    ShoppingListCreateEvent.ItemDescriptionChangeEvent(
+                                        index,
+                                        it
+                                    )
+                                )
+                            },
+                            onQuantityChange = {
+                                viewModel.onEvent(
+                                    ShoppingListCreateEvent.ItemQuantityChangeEvent(
+                                        index,
+                                        it
+                                    )
+                                )
+                            }
                         )
                         Row(horizontalArrangement = Arrangement.Center) {
                             Divider(

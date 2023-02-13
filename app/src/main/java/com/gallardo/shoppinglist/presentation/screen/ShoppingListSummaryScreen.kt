@@ -35,6 +35,17 @@ fun ShoppingListSummaryScreen(
         mutableStateOf(false)
     }
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "My lists",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            )
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {

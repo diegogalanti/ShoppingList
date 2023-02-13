@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,8 +24,7 @@ fun ShoppingListCreateBAB(
     modifier: Modifier = Modifier,
     paperColor: PaperSheetTexture,
     onEvent: (ShoppingListCreateEvent) -> Unit,
-    penColor: Color,
-    onClose: () -> Unit
+    penColor: Color
 ) {
     var colorExpanded by remember { mutableStateOf(false) }
     var textureExpanded by remember { mutableStateOf(false) }
@@ -38,14 +36,6 @@ fun ShoppingListCreateBAB(
                 Icon(
                     Icons.Filled.Check,
                     contentDescription = stringResource(id = R.string.save_button_description)
-                )
-            }
-            IconButton(onClick = {
-                onClose()
-            }) {
-                Icon(
-                    Icons.Filled.Close,
-                    contentDescription = stringResource(id = R.string.close_button_description)
                 )
             }
             IconButton(
