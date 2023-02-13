@@ -19,8 +19,8 @@ object AppModule {
         return ShoppingListRepImpl(database.shoppingListDao, database.shoppingListItemDao)
     }
     @Provides
-    fun provideShoppingListCreateRep(database: ShoppingListDatabase) : ShoppingListCreateRep {
-        return ShoppingListCreateRepImpl(database.shoppingListDao, database.shoppingListItemDao)
+    fun provideShoppingListCreateRep(database: ShoppingListDatabase) : ShoppingListCreateEditRep {
+        return ShoppingListCreateEditRepImpl(database.shoppingListDao, database.shoppingListItemDao)
     }
 
     @Provides

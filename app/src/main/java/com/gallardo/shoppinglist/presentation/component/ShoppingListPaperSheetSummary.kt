@@ -48,7 +48,7 @@ fun ShoppingListPaperSheetSummary(
     if (dismissState.isDismissed(DismissDirection.StartToEnd)) {
         onDismiss()
         LaunchedEffect(key1 = true) {
-            coroutineScope.launch(Dispatchers.Default) {  dismissState.snapTo(DismissValue.Default) }
+            coroutineScope.launch(Dispatchers.Default) { dismissState.snapTo(DismissValue.Default) }
         }
 
 
@@ -177,5 +177,6 @@ fun ShoppingListPaperSheetSummary(
                     }
                 }
             }
-        })
+        }
+    )
 }

@@ -2,12 +2,23 @@ package com.gallardo.shoppinglist.domain.repository
 
 import com.gallardo.shoppinglist.data.database.dao.ShoppingListDao
 import com.gallardo.shoppinglist.data.database.dao.ShoppingListItemDao
+import com.gallardo.shoppinglist.data.database.model.asDomainModel
 import com.gallardo.shoppinglist.domain.model.ShoppingList
 import com.gallardo.shoppinglist.domain.model.ShoppingListItem
 import com.gallardo.shoppinglist.domain.model.asDatabaseEntity
 
-class ShoppingListCreateRepImpl(private val listDao: ShoppingListDao, private val itemDao: ShoppingListItemDao): ShoppingListCreateRep {
-    override suspend fun createShoppingList(list: ShoppingList) : Long {
+class ShoppingListCreateEditRepImpl(private val listDao: ShoppingListDao, private val itemDao: ShoppingListItemDao): ShoppingListCreateEditRep {
+    override suspend fun getShoppingList(listId: Int): ShoppingList {
+        return listDao.getShoppingList(listId).asDomainModel()
+    }
+
+    override suspend fun getShoppingListItems(listId: Int): List<ShoppingListItem> {
+        return itemDao.getShoppingListItems(listId).map {
+            it.asDomainModel()
+        }
+    }
+
+    override suspend fun upsertShoppingList(list: ShoppingList) : Long {
         return listDao.upsertShoppingList(list.asDatabaseEntity())
     }
 

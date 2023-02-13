@@ -9,5 +9,7 @@ sealed interface ShoppingListEvent {
 
 sealed interface ShoppingListNavigationEvent {
     data class OpenListEvent(val listId: Int): ShoppingListNavigationEvent
-    object CreateListEvent: ShoppingListNavigationEvent
+    object CreateEditListEvent: ShoppingListNavigationEvent
+
+    object CloseEvent: ShoppingListNavigationEvent
 }

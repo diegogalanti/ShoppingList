@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.*
@@ -24,7 +25,10 @@ import com.gallardo.shoppinglist.presentation.view_model.ShoppingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingListSummaryScreen(modifier: Modifier = Modifier, onNavigationEvent : (ShoppingListNavigationEvent) -> Unit) {
+fun ShoppingListSummaryScreen(
+    modifier: Modifier = Modifier,
+    onNavigationEvent: (ShoppingListNavigationEvent) -> Unit
+) {
     val viewModel = hiltViewModel<ShoppingListViewModel>()
     val state = viewModel.uiState.collectAsState().value
     val dialogState = remember {
@@ -32,13 +36,13 @@ fun ShoppingListSummaryScreen(modifier: Modifier = Modifier, onNavigationEvent :
     }
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = {
-                    onNavigationEvent(ShoppingListNavigationEvent.CreateListEvent)
-                }
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Create new list")
-            }
+                    onNavigationEvent(ShoppingListNavigationEvent.CreateEditListEvent)
+                },
+                text = { Text(text = "New list") },
+                icon = { Icon(Icons.Filled.Add, contentDescription = "Create new list") }
+            )
         }
     ) { paddingValue ->
         when (state) {
@@ -52,12 +56,12 @@ fun ShoppingListSummaryScreen(modifier: Modifier = Modifier, onNavigationEvent :
                     ) {
                         Text(text = "No list to show, use the + button to include a new List")
                     }
-                } else
+                } else {
                     LazyColumn(
                         modifier
-                            .fillMaxSize()
-                            .padding(paddingValue)
-                            .padding(16.dp)
+                            .padding(paddingValue),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 76.dp)
                     ) {
                         items(
                             items = state.shoppingLists,
@@ -73,16 +77,21 @@ fun ShoppingListSummaryScreen(modifier: Modifier = Modifier, onNavigationEvent :
                                     dialogState.value = true
                                 },
                                 modifier = Modifier.clickable {
-                                    onNavigationEvent(ShoppingListNavigationEvent.OpenListEvent(currentList.id!!))
+                                    onNavigationEvent(
+                                        ShoppingListNavigationEvent.OpenListEvent(
+                                            currentList.id!!
+                                        )
+                                    )
                                 }
                             )
-
-                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
             }
         }
     }
+
     if (dialogState.value) {
         AlertDialog(
             onDismissRequest = { dialogState.value = false },

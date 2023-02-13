@@ -3,11 +3,8 @@ package com.gallardo.shoppinglist.presentation.view_model
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gallardo.shoppinglist.domain.model.ShoppingList
-import com.gallardo.shoppinglist.domain.model.ShoppingListItemSimple
-import com.gallardo.shoppinglist.domain.model.UserMessage
-import com.gallardo.shoppinglist.domain.model.asShoppingList
-import com.gallardo.shoppinglist.domain.repository.ShoppingListCreateRep
+import com.gallardo.shoppinglist.domain.model.*
+import com.gallardo.shoppinglist.domain.repository.ShoppingListCreateEditRep
 import com.gallardo.shoppinglist.presentation.event.ShoppingListCreateEvent
 import com.gallardo.shoppinglist.presentation.state.ShoppingListCreateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +14,8 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class ShoppingListCreateViewModel @Inject constructor(
-    private val repository: ShoppingListCreateRep,
+class ShoppingListCreateEditViewModel @Inject constructor(
+    private val repository: ShoppingListCreateEditRep,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -28,6 +25,36 @@ class ShoppingListCreateViewModel @Inject constructor(
         )
 
     val uiState = _uiState.asStateFlow()
+
+    init {
+        savedStateHandle.get<Int>("listId")?.let { listId ->
+            if (listId != -1) {
+                viewModelScope.launch {
+                    repository.getShoppingList(listId).also { list ->
+                        _uiState.update { state ->
+                            state.copy(
+                                name = list.name,
+                                description = list.description,
+                                texture = list.paperTexture,
+                                type = list.type,
+                                penColor = list.penColor,
+                                id = list.id,
+                                screenTitle = "Edit list"
+                            )
+                        }
+                    }
+                    repository.getShoppingListItems(listId).also { items ->
+                        _uiState.update { state ->
+                            state.copy(itemList = items)
+                        }
+                    }
+                    initialUiState= _uiState.value
+                }
+            } else {
+                initialUiState= _uiState.value
+            }
+        }
+    }
 
     fun onEvent(event: ShoppingListCreateEvent) {
         when (event) {
@@ -57,7 +84,7 @@ class ShoppingListCreateViewModel @Inject constructor(
                     val newState =
                         if (event.description.isNotBlank() && state.itemList[event.index].description.isBlank()) {
                             val newList = state.itemList.toMutableList()
-                            newList.add(ShoppingListItemSimple("",""))
+                            newList.add(ShoppingListItem("", "", false, 0, null))
                             newList[event.index] =
                                 newList[event.index].copy(description = event.description)
                             state.copy(itemList = newList)
@@ -93,10 +120,10 @@ class ShoppingListCreateViewModel @Inject constructor(
                 if (uiState.value.name.isBlank()) {
                     _uiState.update { state ->
                         val messages = state.userMessages +
-                            UserMessage(
-                                "List title cannot be empty",
-                                UUID = UUID.randomUUID().mostSignificantBits
-                            )
+                                UserMessage(
+                                    "List title cannot be empty",
+                                    UUID = UUID.randomUUID().mostSignificantBits
+                                )
                         val withoutDuplicates = messages.distinctBy {
                             it.message
                         }
@@ -104,7 +131,7 @@ class ShoppingListCreateViewModel @Inject constructor(
                     }
                 } else {
                     viewModelScope.launch {
-                        val rowId = repository.createShoppingList(
+                        val rowId = repository.upsertShoppingList(
                             ShoppingList(
                                 uiState.value.name,
                                 uiState.value.description,
@@ -112,12 +139,12 @@ class ShoppingListCreateViewModel @Inject constructor(
                                 uiState.value.type,
                                 System.currentTimeMillis(),
                                 uiState.value.penColor,
-                                null
+                                uiState.value.id
                             )
                         )
-                        val newListID = repository.getShoppingListID(rowId)
+                        val newListID = if (rowId == -1L) uiState.value.id?:0 else repository.getShoppingListID(rowId)
                         repository.upsertShoppingListItem(uiState.value.itemList.map {
-                            it.asShoppingList(newListID)
+                            it.copy(listId = newListID)
                         })
                         _uiState.update {
                             it.copy(shouldClose = true)
@@ -138,10 +165,14 @@ class ShoppingListCreateViewModel @Inject constructor(
         }
     }
 
-    fun userMessageShown(messageUUID: Long){
+    fun userMessageShown(messageUUID: Long) {
         _uiState.update { state ->
             val messages = state.userMessages.filterNot { it.UUID == messageUUID }
             state.copy(userMessages = messages)
         }
+    }
+
+    fun shouldShowDiscardChanges(): Boolean {
+        return _uiState.value != initialUiState
     }
 }
